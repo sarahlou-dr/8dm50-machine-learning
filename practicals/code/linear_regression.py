@@ -28,6 +28,6 @@ def mean_squared_error(X, y_real, beta):
     y_pred = np.dot(X, beta) 
 
     # calculate the mean squared error between estimates and real y values
-    mse = np.sqrt(np.sum(np.square(y_real - y_pred))) / y_real.shape[0]
+    mse = np.sum(np.square(y_real - y_pred)) / y_real.shape[0]
 
     return mse
