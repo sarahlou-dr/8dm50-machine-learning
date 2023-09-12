@@ -30,11 +30,29 @@ X2_1 = X2[X2[:, 30] == 1]
 p_y0 = len(X2_0) / len(X)
 p_y1 = len(X2_1) / len(X)
 
-print(X2_0.shape, X2_1.shape, p_y0, p_y1)
+# print(X2_0.shape, X2_1.shape, p_y0, p_y1)
 
-#PDF's for y = 0
-print(fit_dist(X2_0[:,0]))
+# #PDF's for y = 0
+# print(fit_dist(X2_0[:,0]))
 
-#PDF's for y = 1
-print(fit_dist(X2_1[:,0]))
+# #PDF's for y = 1
+# print(fit_dist(X2_1[:,0]))
+
+x2_0 = fit_dist(X2_0[:,0])
+x2_1 = fit_dist(X2_1[:,0])
+
+values = [value for value in range(0, 30)]
+
+probabilities = [x2_0.pdf(value) for value in values]
+probabilities2 = [x2_1.pdf(value) for value in values]
+
+# plot the histogram and pdf
+plt.hist(X2_0[:,0], bins=10, density=True)
+plt.hist(X2_1[:,0], bins=10, density=True)
+plt.plot(values, probabilities2)
+plt.plot(values, probabilities)
+plt.savefig("test.png")
+
+print(probabilities)
+
 
