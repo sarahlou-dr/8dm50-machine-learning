@@ -36,14 +36,6 @@ X2_1_norm = X2_norm[X2_norm[:, 30] == 1]
 p_y0 = len(X2_0) / len(X)
 p_y1 = len(X2_1) / len(X)
 
-# print(X2_0.shape, X2_1.shape, p_y0, p_y1)
-
-# #PDF's for y = 0
-# print(fit_dist(X2_0[:,0]))
-
-# #PDF's for y = 1
-# print(fit_dist(X2_1[:,0]))
-
 distX_0 = fit_dist(X2_0[:,0])
 distX_0_norm = fit_dist(X2_0_norm[:,0])
 distX_1 = fit_dist(X2_1[:,0])
@@ -59,6 +51,7 @@ probabilities2 = [distX_1_norm.pdf(value) for value in values]
 fig, axs = plt.subplots(5, 6)
 fig.tight_layout()
 
+
 k = 0
 i = 0
 while i < 5:
@@ -71,13 +64,16 @@ while i < 5:
             probabilities = [distX_0_norm.pdf(value) for value in values]
             probabilities2 = [distX_1_norm.pdf(value) for value in values]
 
-            axs[i, j].plot(values, probabilities2, color = "orange")
-            axs[i, j].plot(values, probabilities, color = "blue")
+            axs[i, j].plot(values, probabilities2, color = "orange", label="Class 1")
+            axs[i, j].plot(values, probabilities, color = "blue", label="Class 0")
             axs[i, j].set_title("Feature " + str(k+1))
             k += 1
     i += 1
+    handles, labels = axs[i-1, j-1].get_legend_handles_labels()
 
+fig.legend(handles, labels, loc='upper center')
 plt.savefig("Subplots.png")
+plt.show()
 
 
 
