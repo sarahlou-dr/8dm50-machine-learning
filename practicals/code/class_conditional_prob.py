@@ -33,7 +33,8 @@ p_y1 = len(X2_1) / len(X)
 print(X2_0.shape, X2_1.shape, p_y0, p_y1)
 
 #PDF's for y = 0
-print(fit_dist(X[:,0]))
+print(fit_dist(X2_0[:,0]))
 
 #PDF's for y = 1
+print(fit_dist(X2_1[:,0]))
 
