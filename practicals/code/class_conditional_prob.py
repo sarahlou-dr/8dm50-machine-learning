@@ -3,13 +3,17 @@ import numpy as np
 import pandas as pd
 from scipy.stats import norm
 import matplotlib.pyplot as plt
+from sklearn import preprocessing
 from sklearn.datasets import load_breast_cancer
 
 #load data
 breast_cancer = load_breast_cancer()
 X = breast_cancer.data
+X_norm = (X-np.mean(X, axis = 0)) / np.std(X, axis=0)
 Y = breast_cancer.target[:, np.newaxis]
 X2 = np.append(X, Y, axis=1)
+X2_norm = np.append(X_norm, Y, axis=1)
+
 print(X[:5])
 print(Y[:5])
 
@@ -27,6 +31,8 @@ def fit_dist(data):
 #Calculating prior probabilities
 X2_0 = X2[X2[:, 30] == 0]
 X2_1 = X2[X2[:, 30] == 1]
+X2_0_norm = X2_norm[X2_norm[:, 30] == 0]
+X2_1_norm = X2_norm[X2_norm[:, 30] == 1]
 p_y0 = len(X2_0) / len(X)
 p_y1 = len(X2_1) / len(X)
 
@@ -38,21 +44,41 @@ p_y1 = len(X2_1) / len(X)
 # #PDF's for y = 1
 # print(fit_dist(X2_1[:,0]))
 
-x2_0 = fit_dist(X2_0[:,0])
-x2_1 = fit_dist(X2_1[:,0])
+distX_0 = fit_dist(X2_0[:,0])
+distX_0_norm = fit_dist(X2_0_norm[:,0])
+distX_1 = fit_dist(X2_1[:,0])
+distX_1_norm = fit_dist(X2_1_norm[:,0])
 
-values = [value for value in range(0, 30)]
 
-probabilities = [x2_0.pdf(value) for value in values]
-probabilities2 = [x2_1.pdf(value) for value in values]
+values = [value for value in np.arange(-0.2, 0.2)]
+
+probabilities = [distX_0_norm.pdf(value) for value in values]
+probabilities2 = [distX_1_norm.pdf(value) for value in values]
 
 # plot the histogram and pdf
-plt.hist(X2_0[:,0], bins=10, density=True)
-plt.hist(X2_1[:,0], bins=10, density=True)
-plt.plot(values, probabilities2)
-plt.plot(values, probabilities)
-plt.savefig("test.png")
+fig, axs = plt.subplots(5, 6)
+fig.tight_layout()
+fig.legend(["Class 0", "Class 1"])
 
-print(probabilities)
+k = 0
+i = 0
+while i < 5:
+    for j in range(0, 6):           
+            axs[i, j].hist(X2_0_norm[:,k], bins=10, density=True, alpha=0.7)
+            axs[i, j].hist(X2_1_norm[:,k], bins=10, density=True, alpha=0.7)
+
+            values = [value for value in np.arange(min(X_norm[:,k]), max(X_norm[:,k]))]
+
+            probabilities = [distX_0_norm.pdf(value) for value in values]
+            probabilities2 = [distX_1_norm.pdf(value) for value in values]
+
+            axs[i, j].plot(values, probabilities2, color = "orange")
+            axs[i, j].plot(values, probabilities, color = "blue")
+            axs[i, j].set_title("Feature " +str(k+1))
+            k += 1
+    i += 1
+
+plt.savefig("Subplots.png")
+
 
 
