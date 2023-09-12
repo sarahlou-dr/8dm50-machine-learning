@@ -58,7 +58,6 @@ probabilities2 = [distX_1_norm.pdf(value) for value in values]
 # plot the histogram and pdf
 fig, axs = plt.subplots(5, 6)
 fig.tight_layout()
-fig.legend(["Class 0", "Class 1"])
 
 k = 0
 i = 0
