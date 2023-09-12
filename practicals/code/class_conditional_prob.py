@@ -73,7 +73,7 @@ while i < 5:
 
             axs[i, j].plot(values, probabilities2, color = "orange")
             axs[i, j].plot(values, probabilities, color = "blue")
-            axs[i, j].set_title("Feature " +str(k+1))
+            axs[i, j].set_title("Feature " + str(k+1))
             k += 1
     i += 1
 
