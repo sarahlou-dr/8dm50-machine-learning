@@ -7,12 +7,12 @@ class knn_classifier:
         
     def fit(self, X_train, y_train):
         # normalize features to have zero mean and unit standard devation
-        self.X = (X_train - np.mean(X_train)) / np.std(X_train)
+        self.X = (X_train - np.mean(X_train, axis=0)) / np.std(X_train, axis=0)
         self.y = y_train
 
     def predict(self, x):
         # normalize x
-        x = (x - np.mean(self.X)) / np.std(self.X)
+        x = (x - np.mean(self.X, axis=0)) / np.std(self.X, axis=0)
         
         # first calculate all euclidean distances between x and the training data
         distances = np.sqrt(np.sum(np.power(self.X - x, 2), axis=1))
@@ -31,7 +31,7 @@ class knn_classifier:
         
     def evaluate(self, X_test, y_test):
         # normalize test set
-        x_test = (X_test - np.mean(X_test)) / np.std(X_test)
+        x_test = (X_test - np.mean(X_test, axis=0)) / np.std(X_test, axis=0)
         # calculate accuracy for the test set
         return sum([1 if self.predict(x) == y_test[i] else 0 for i, x in enumerate(x_test)]) / y_test.shape[0]
     
@@ -42,16 +42,15 @@ class knn_regression:
         
     def fit(self, X_train, y_train):
         # normalize features to have zero mean and unit standard devation
-        self.X = (X_train - np.mean(X_train)) / np.std(X_train)
+        self.X = (X_train - np.mean(X_train, axis=0)) / np.std(X_train, axis=0)
         self.y = y_train
 
     def predict(self, x):
         # normalize x
-        x = (x - np.mean(self.X)) / np.std(self.X)
+        x = (x - np.mean(self.X, axis=0)) / np.std(self.X, axis=0)
         
         # first calculate all euclidean distances between x and the training data
         distances = np.sqrt(np.sum(np.power(self.X - x, 2), axis=1))
-        #distances = np.linalg.norm(self.X - x, axis=1)
 
         # add indexes
         distances = [(i, distance) for i, distance in enumerate(distances)]
@@ -67,7 +66,7 @@ class knn_regression:
         
     def evaluate(self, X_test, y_test):
         # normalize test set
-        x_test = (X_test - np.mean(X_test)) / np.std(X_test)
+        x_test = (X_test - np.mean(X_test, axis=0)) / np.std(X_test, axis=0)
 
         # calculate mean squared error for the test set
         return sum([np.square(self.predict(x) - y_test[i]) for i, x in enumerate(x_test)]) / X_test.shape[0]
