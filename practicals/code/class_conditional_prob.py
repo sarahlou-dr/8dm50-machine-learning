@@ -1,9 +1,7 @@
-#https://machinelearningmastery.com/classification-as-conditional-probability-and-the-naive-bayes-algorithm/
 import numpy as np
 import pandas as pd
 from scipy.stats import norm
 import matplotlib.pyplot as plt
-from sklearn import preprocessing
 from sklearn.datasets import load_breast_cancer
 
 #load data
@@ -28,7 +26,7 @@ def fit_dist(data):
     dist = norm(mu, sigma)
     return dist
 
-#Calculating prior probabilities
+#Calculating prior probabilities and separating dataset
 X2_0 = X2[X2[:, 30] == 0]
 X2_1 = X2[X2[:, 30] == 1]
 X2_0_norm = X2_norm[X2_norm[:, 30] == 0]
@@ -42,38 +40,36 @@ distX_1 = fit_dist(X2_1[:,0])
 distX_1_norm = fit_dist(X2_1_norm[:,0])
 
 
-values = [value for value in np.arange(-0.2, 0.2)]
-
-probabilities = [distX_0_norm.pdf(value) for value in values]
-probabilities2 = [distX_1_norm.pdf(value) for value in values]
-
 # plot the histogram and pdf
-fig, axs = plt.subplots(5, 6)
-fig.tight_layout()
 
 
-k = 0
-i = 0
-while i < 5:
-    for j in range(0, 6):           
-            axs[i, j].hist(X2_0_norm[:,k], bins=10, density=True, alpha=0.7)
-            axs[i, j].hist(X2_1_norm[:,k], bins=10, density=True, alpha=0.7)
+def plot_conditional_prob():
+    fig, axs = plt.subplots(5, 6)
+    fig.tight_layout()
 
-            values = [value for value in np.arange(min(X_norm[:,k]), max(X_norm[:,k]))]
+    k = 0
+    i = 0
+    while i < 5:
+        for j in range(0, 6):           
+                axs[i, j].hist(X2_0_norm[:,k], bins=10, density=True, alpha=0.7)
+                axs[i, j].hist(X2_1_norm[:,k], bins=10, density=True, alpha=0.7)
 
-            probabilities = [distX_0_norm.pdf(value) for value in values]
-            probabilities2 = [distX_1_norm.pdf(value) for value in values]
+                values = [value for value in np.arange(min(X_norm[:,k]), max(X_norm[:,k]))]
 
-            axs[i, j].plot(values, probabilities2, color = "orange", label="Class 1")
-            axs[i, j].plot(values, probabilities, color = "blue", label="Class 0")
-            axs[i, j].set_title("Feature " + str(k+1))
-            k += 1
-    i += 1
-    handles, labels = axs[i-1, j-1].get_legend_handles_labels()
+                probabilities = [distX_0_norm.pdf(value) for value in values]
+                probabilities2 = [distX_1_norm.pdf(value) for value in values]
 
-fig.legend(handles, labels, loc='upper center')
-plt.savefig("Subplots.png")
-plt.show()
+                axs[i, j].plot(values, probabilities2, color = "orange", label="Class 1")
+                axs[i, j].plot(values, probabilities, color = "blue", label="Class 0")
+                axs[i, j].set_title("Feature " + str(k+1))
+                k += 1
+        i += 1
+        handles, labels = axs[i-1, j-1].get_legend_handles_labels()
+
+    fig.legend(handles, labels, loc='upper center')
+    plt.savefig("Subplots.png")
+    plt.show()
 
 
 
+plot_conditional_prob()
