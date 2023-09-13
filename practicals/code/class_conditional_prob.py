@@ -40,7 +40,7 @@ distX_1 = fit_dist(X2_1[:,0])
 distX_1_norm = fit_dist(X2_1_norm[:,0])
 
 
-# plot the histogram and pdf
+#plot the histogram and pdf
 
 
 def plot_conditional_prob():
