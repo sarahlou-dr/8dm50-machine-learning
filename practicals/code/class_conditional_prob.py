@@ -1,75 +1,66 @@
 import numpy as np
-import pandas as pd
-from scipy.stats import norm
 import matplotlib.pyplot as plt
+
 from sklearn.datasets import load_breast_cancer
 
-#load data
-breast_cancer = load_breast_cancer()
-X = breast_cancer.data
-X_norm = (X-np.mean(X, axis = 0)) / np.std(X, axis=0)
-Y = breast_cancer.target[:, np.newaxis]
-X2 = np.append(X, Y, axis=1)
-X2_norm = np.append(X_norm, Y, axis=1)
+def normal_distribution(X):
+    """
+    Compute the standard deviation, mean and their corresponding normal/Gaussian distribution of all features in X.
 
-print(X[:5])
-print(Y[:5])
+    :param X: input matrix with column-wise features
+    :returns: a tuple with three lists with the standard deviation, mean and normal distribution for each column in X
+    """
+    std = np.std(X, axis=0)
+    mean = np.std(X, axis=0)
+    distributions = [np.random.normal(mean[i], std[i], 1000) for i in range(X.shape[1])]
 
-df_X = pd.DataFrame(X)
-df_Y = pd.DataFrame(Y)
+    return std, mean, distributions
 
-#Function for creating distributions
-def fit_dist(data):
-    mu=np.mean(data)
-    sigma = np.std(data)
-    print(mu, sigma)
-    dist = norm(mu, sigma)
-    return dist
+def pdf(std, mean, distribution):
+    """
+    Use the standard deviation, mean and their corresponding normal distribution to compute the probability density function.
 
-#Calculating prior probabilities and separating dataset
-X2_0 = X2[X2[:, 30] == 0]
-X2_1 = X2[X2[:, 30] == 1]
-X2_0_norm = X2_norm[X2_norm[:, 30] == 0]
-X2_1_norm = X2_norm[X2_norm[:, 30] == 1]
-p_y0 = len(X2_0) / len(X)
-p_y1 = len(X2_1) / len(X)
+    :param std: The standard deviation corresponding to the normal distribution
+    :param mean: The mean corresponding to the normal distribution
+    :param distribution: An np.random.normal distribution from which the probability density function will be determined
 
-distX_0 = fit_dist(X2_0[:,0])
-distX_0_norm = fit_dist(X2_0_norm[:,0])
-distX_1 = fit_dist(X2_1[:,0])
-distX_1_norm = fit_dist(X2_1_norm[:,0])
+    :returns: a tuple of the bins sampled from the distribution and the pdf computed for it
+    """
+    count, bins, ignored = plt.hist(distribution, 50, density=True)
+    plt.close()
+    pdf = (1/(std * np.sqrt(2 * np.pi)) * np.exp( - (bins - mean)**2 / (2* std**2)))
 
+    return bins, pdf
 
-#plot the histogram and pdf
+def plot_conditional_prob(bins_and_pdf_0, bins_and_pdf_1, distributions_0, distributions_1):
+    """
+    Plot the conditional probabilities of all the features in a dataset.
 
+    :param bins_and_pdf_0: a list of tuples of the bins and pdf as computed by the function pdf for all features of a dataset for class 0
+    :param bins_and_pdf_1: a list of tuples of the bins and pdf as computed by the function pdf for all features of a dataset for class 1
+    :param distributions_0: a list of normal distributions computed with the function normal_distribution for all features of a dataset for class 0
+    :param distributions_1: a list of normal distributions computed with the function normal_distribution for all features of a dataset for class 1
 
-def plot_conditional_prob():
-    fig, axs = plt.subplots(5, 6)
+    :returns: nothing, but plots the pdf's of the different features in one figure
+    """
+
+    fig, axs = plt.subplots(5, 6, figsize=(12,10))
     fig.tight_layout()
 
     k = 0
     i = 0
-    while i < 5:
+    for i in range(0,5):
         for j in range(0, 6):           
-                axs[i, j].hist(X2_0_norm[:,k], bins=10, density=True, alpha=0.7)
-                axs[i, j].hist(X2_1_norm[:,k], bins=10, density=True, alpha=0.7)
+                bins_0, pdf_0 = bins_and_pdf_0[k]
+                bins_1, pdf_1 = bins_and_pdf_1[k]
 
-                values = [value for value in np.arange(min(X_norm[:,k]), max(X_norm[:,k]))]
+                axs[i, j].hist(distributions_0[k], 50, density=True, alpha=0.7)
+                axs[i, j].hist(distributions_1[k], 50, density=True, alpha=0.7)
 
-                probabilities = [distX_0_norm.pdf(value) for value in values]
-                probabilities2 = [distX_1_norm.pdf(value) for value in values]
-
-                axs[i, j].plot(values, probabilities2, color = "orange", label="Class 1")
-                axs[i, j].plot(values, probabilities, color = "blue", label="Class 0")
-                axs[i, j].set_title("Feature " + str(k+1))
-                k += 1
-        i += 1
+                axs[i, j].plot(bins_0, pdf_0, color='blue', label='Class 0')
+                axs[i, j].plot(bins_1, pdf_1, color='orange', label='Class 1')
+                axs[i, j].set_title("Feature" + str(k+1))
+                k+=1
         handles, labels = axs[i-1, j-1].get_legend_handles_labels()
 
     fig.legend(handles, labels, loc='upper center')
-    plt.savefig("Subplots.png")
-    plt.show()
-
-
-
-plot_conditional_prob()

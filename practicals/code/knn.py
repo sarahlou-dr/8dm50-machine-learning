@@ -11,7 +11,7 @@ class knn_classifier:
         self.y = y_train
 
     def predict(self, x):
-        # normalize x
+        # normalize x per column
         x = (x - np.mean(self.X, axis=0)) / np.std(self.X, axis=0)
         
         # first calculate all euclidean distances between x and the training data
@@ -46,7 +46,7 @@ class knn_regression:
         self.y = y_train
 
     def predict(self, x):
-        # normalize x
+        # normalize x per column
         x = (x - np.mean(self.X, axis=0)) / np.std(self.X, axis=0)
         
         # first calculate all euclidean distances between x and the training data
